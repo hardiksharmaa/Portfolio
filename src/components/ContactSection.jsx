@@ -11,9 +11,6 @@ import { cn } from "@/lib/utils";
 import { useToast } from "../hooks/use-toast";
 import { useState } from "react";
 
-// 🔑 CONFIGURATION: Get the key from environment variables.
-// NOTE: Assuming Vite/modern setup (import.meta.env). 
-// If using Create React App (CRA), use: process.env.REACT_APP_WEB3FORMS_ACCESS_KEY
 const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY; 
 
 export const ContactSection = () => {
@@ -35,7 +32,6 @@ export const ContactSection = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if the key is available
     if (!ACCESS_KEY) {
         console.error("Web3Forms Access Key is missing. Check your .env.local file and build configuration.");
         toast({
@@ -49,14 +45,12 @@ export const ContactSection = () => {
     setIsSubmitting(true);
 
     try {
-      // 1. Prepare data including the required access_key
       const data = {
         ...formData,
         access_key: ACCESS_KEY,
         subject: `New Portfolio Message from ${formData.name}`,
       };
 
-      // 2. Send the request to the Web3Forms API
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
@@ -69,20 +63,17 @@ export const ContactSection = () => {
       const result = await response.json();
 
       if (result.success) {
-        // Success Toast
         toast({
           title: "Message sent!",
           description: "Thank you for your message. I'll get back to you soon.",
         });
         
-        // Reset form fields
         setFormData({
           name: "",
           email: "",
           message: "",
         });
       } else {
-        // Handle API-side error (e.g., key missing, validation failure)
         console.error("Web3Forms Error:", result.message);
         toast({
           title: "Error sending message.",
@@ -91,7 +82,6 @@ export const ContactSection = () => {
         });
       }
     } catch (error) {
-      // Handle network errors
       console.error("Submission error:", error);
       toast({
         title: "Network Error.",

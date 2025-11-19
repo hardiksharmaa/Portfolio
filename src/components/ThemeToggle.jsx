@@ -7,19 +7,15 @@ export const ThemeToggle = () => {
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
-    
-    // Check 1: If no theme is stored, default to 'dark'
-    if (storedTheme === null) {
+        if (storedTheme === null) {
         document.documentElement.classList.add("dark");
         localStorage.setItem("theme", "dark");
         setIsDarkMode(true);
     } 
-    // Check 2: If a theme IS stored, apply the stored theme
     else if (storedTheme === "dark") {
       setIsDarkMode(true);
       document.documentElement.classList.add("dark");
     } else {
-      // If storedTheme is "light", ensure 'dark' is removed
       document.documentElement.classList.remove("dark");
       setIsDarkMode(false);
     }
