@@ -11,6 +11,11 @@ import { cn } from "@/lib/utils";
 import { useToast } from "../hooks/use-toast";
 import { useState } from "react";
 
+// 🔑 CONFIGURATION: Get the key from environment variables.
+// NOTE: Assuming Vite/modern setup (import.meta.env). 
+// If using Create React App (CRA), use: process.env.REACT_APP_WEB3FORMS_ACCESS_KEY
+const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY; 
+
 export const ContactSection = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,24 +32,75 @@ export const ContactSection = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if the key is available
+    if (!ACCESS_KEY) {
+        console.error("Web3Forms Access Key is missing. Check your .env.local file and build configuration.");
+        toast({
+            title: "Configuration Error",
+            description: "Contact key is missing. Please check console.",
+            variant: "destructive",
+        });
+        return;
+    }
+    
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      toast({
-        title: "Message sent!",
-        description: "Thank you for your message. I'll get back to you soon.",
+    try {
+      // 1. Prepare data including the required access_key
+      const data = {
+        ...formData,
+        access_key: ACCESS_KEY,
+        subject: `New Portfolio Message from ${formData.name}`,
+      };
+
+      // 2. Send the request to the Web3Forms API
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(data),
       });
 
-      setFormData({
-        name: "",
-        email: "",
-        message: "",
+      const result = await response.json();
+
+      if (result.success) {
+        // Success Toast
+        toast({
+          title: "Message sent!",
+          description: "Thank you for your message. I'll get back to you soon.",
+        });
+        
+        // Reset form fields
+        setFormData({
+          name: "",
+          email: "",
+          message: "",
+        });
+      } else {
+        // Handle API-side error (e.g., key missing, validation failure)
+        console.error("Web3Forms Error:", result.message);
+        toast({
+          title: "Error sending message.",
+          description: result.message || "Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      // Handle network errors
+      console.error("Submission error:", error);
+      toast({
+        title: "Network Error.",
+        description: "Could not reach the form service.",
+        variant: "destructive",
       });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -72,7 +128,7 @@ export const ContactSection = () => {
                 <div>
                   <h4 className="font-medium"> Email</h4>
                   <a
-                    href="mailto:hello@gmail.com"
+                    href="mailto:hs489819@gmail.com"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     hs489819@gmail.com
@@ -86,7 +142,7 @@ export const ContactSection = () => {
                 <div>
                   <h4 className="font-medium"> Phone</h4>
                   <a
-                    href="tel:+11234567890"
+                    href="tel:+917889480969"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     +91 7889480969
@@ -99,9 +155,9 @@ export const ContactSection = () => {
                 </div>
                 <div>
                   <h4 className="font-medium"> Location</h4>
-                  <a className="text-muted-foreground hover:text-primary transition-colors">
+                  <span className="text-muted-foreground hover:text-primary transition-colors">
                     Jammu, J&K
-                  </a>
+                  </span>
                 </div>
               </div>
             </div>
@@ -123,6 +179,7 @@ export const ContactSection = () => {
           </div>
           <div className="bg-card p-8 rounded-lg shadow-xs">
             <h3 className="text-2xl font-semibold mb-6"> Send a Message</h3>
+            
             <form className="space-y-6" onSubmit={handleSubmit}> 
               <div>
                 <label
