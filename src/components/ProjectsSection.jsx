@@ -22,13 +22,13 @@ const projects = [
   },
   {
     id: 3,
-    title: "Smart City",
+    title: "codeX - Gamified coding",
     description:
-      "The web-app which shows every aspect of your city.",
+      "A Gamified Coding Platform to learn and practice.",
     image: "/projects/project3.png",
-    tags: ["React", "Node.js", "Express.js"],
-    demoUrl: "https://gfg-smartcity.vercel.app/",
-    githubUrl: " https://github.com/hardiksharmaa/GFG_smartcity",
+    tags: ["Next.js", "Typescript", "Tailwind"],
+    demoUrl: "https://code-x-two-phi.vercel.app/",
+    githubUrl: " https://github.com/hardiksharmaa/codeX",
   },
 ];
 
